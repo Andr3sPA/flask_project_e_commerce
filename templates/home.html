@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Create account</a></li>
+      </ul>
+    </nav>
+    {% if current_user.is_authenticated %}
+    <h1>You are logged in as</h1>{ current_user.id }
+    {% else %}
+    <h1>You are not logged in</h1>
+    {% endif %}
+  </body>
+<!-- Brevo Conversations {literal} -->
+<script>
+    (function(d, w, c) {
+        w.BrevoConversationsID = '6686d470307a71428b3b36aa';
+        w[c] = w[c] || function() {
+            (w[c].q = w[c].q || []).push(arguments);
+        };
+        var s = d.createElement('script');
+        s.async = true;
+        s.src = 'https://conversations-widget.brevo.com/brevo-conversations.js';
+        if (d.head) d.head.appendChild(s);
+    })(document, window, 'BrevoConversations');
+</script>
+<!-- /Brevo Conversations {/literal} -->
+</html>
