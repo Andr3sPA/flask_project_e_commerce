@@ -28,10 +28,6 @@ def logout():
 @app.route("/")
 def home():
     return render_template("home.html")
-@app.route('/send_email')
-def send_email():
-    import auth
-    auth.sendVerificationMail()
 @app.route("/confirm/<token>")
 def confirm_email(token):
     import auth
