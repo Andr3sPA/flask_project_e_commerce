@@ -1,8 +1,9 @@
 from flask import redirect, url_for, render_template
 from flask_login import logout_user, login_required
 from __init__ import create_app
-
+from flask_cors import CORS
 app = create_app()
+CORS(app)
 with app.app_context():
     from models import db
     db.create_all()  # Crear todas las tablas

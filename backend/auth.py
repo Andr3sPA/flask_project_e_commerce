@@ -47,11 +47,11 @@ def handleRegister():
     email = request.form.get('email')
     usuario = User.query.filter_by(email=email).first()
     if usuario:
-        render_template("popup_window.html", error="El email ya está registrado")
+        return(jsonify({'message': 'El usuario ya está registrado'}), 401)
     elif not (validar_telefono(request.form.get('phone'))):
-        return render_template("popup_window.html", error="El telefono debe tener un formato válido")
+        return(jsonify({'message': 'El telefono debe tener un formato válido'}), 401)
     elif not (validar_contrasena(request.form.get('password'))):
-        return render_template("popup_window.html", error="La contraseña debe tener al menos 8 caracteres, contener al menos una letra mayuscula, una letra minuscula y un número.")
+        return (jsonify({'message': 'La contraseña debe tener al menos 8 caracteres, contener al menos una letra mayuscula, una letra minuscula y un número.'}), 401)
 
     pw_hash=bcrypt.generate_password_hash(request.form.get("password_reg")).decode('utf-8')
     name=request.form.get("first_name")+" "+request.form.get("last_name")
@@ -66,20 +66,20 @@ def handleRegister():
                                                      , confirm_url=confirm_url, Nombre=user.name))
     db.session.add(user)
     db.session.commit()
-    return redirect(url_for("login"))
+    return(jsonify({'message': 'El usuario fue registrado exitosamente'}), 200)
 
 def handleLogin():
     user = User.query.filter_by(
     email=request.form.get("email")).first()
     if user is None:
-        return render_template('login.html', error="El usuario no existe")
+        return (jsonify({'message': 'El usuario no existe'}), 401)
     elif user and bcrypt.check_password_hash(user.password, request.form.get("password")):
         if user.verificationCode != None:
-            return render_template("popup_window.html", texto="El email aun no ha sido confirmado")
+            return (jsonify({'message': 'El email aun no ha sido confirmado'}), 401)
         login_user(user)
-        return redirect(url_for("home"))
+        return(jsonify({'message': 'Las credenciales son correctas'}), 200)
     else:
-        return render_template("popup_window.html", texto="Email o contraseña incorrectos")
+        return (jsonify({'message': 'Email o contraseña incorrectos'}), 401)
 
 
 def handleLoader_user(user_id):
@@ -110,14 +110,14 @@ def handle_confirm_token(token):
     usuario = User.query.filter_by(email=email).first()
 
     if usuario.verificationCode == None:
-        flash("Account already confirmed.", "success")
+        return jsonify({"message": "La cuenta ya fue confirmada"}), 200
         return redirect(url_for("home"))
 
     elif verificar_codigo(token):
         usuario.verificationCode = null()
         db.session.add(usuario)
         db.session.commit()
-        flash("You have confirmed your account. Thanks!", "success")
+        return jsonify({"message": "La confirmacion fue exitosa"}), 200
     else:
-        flash("The confirmation link is invalid or has expired.", "danger")
+        return jsonify({"message": "El link de confirmación ha expirado"}), 500
     return redirect(url_for("home"))
