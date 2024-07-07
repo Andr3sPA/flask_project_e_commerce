@@ -18,7 +18,7 @@ function App() {
     useEffect(() => {
         // Using axios to fetch the api from 
         // flask server it will be redirected to proxy
-        axios.get("/data")
+        axios.get("http://localhost:5000//data")
             .then((response) => {
                 // Setting a data from api
                 setdata({
@@ -46,4 +46,3 @@ function App() {
 }
 
 export default App;
-
