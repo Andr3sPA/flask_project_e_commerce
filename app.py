@@ -1,13 +1,12 @@
 from flask import redirect, url_for, render_template
 from flask_login import logout_user, login_required
-from flask_validators import validate_form
 from __init__ import create_app
 
 app = create_app()
 with app.app_context():
     from models import db
     db.create_all()  # Crear todas las tablas
-@validate_form('email', 'password','address','nameRestaurant')
+
 @app.route('/register', methods=["GET", "POST"])
 def register():
     import auth

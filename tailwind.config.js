@@ -1,9 +1,12 @@
+const colors = require('tailwindcss/colors')
 module.exports = {
   mode: 'jit',
   content: ["./templates/**/*.{html,htm}"],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+      require("flowbite/plugin")
+  ],
 }
 
