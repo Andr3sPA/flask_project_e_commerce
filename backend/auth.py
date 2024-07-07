@@ -111,7 +111,6 @@ def handle_confirm_token(token):
 
     if usuario.verificationCode == None:
         return jsonify({"message": "La cuenta ya fue confirmada"}), 200
-        return redirect(url_for("home"))
 
     elif verificar_codigo(token):
         usuario.verificationCode = null()
@@ -120,4 +119,3 @@ def handle_confirm_token(token):
         return jsonify({"message": "La confirmacion fue exitosa"}), 200
     else:
         return jsonify({"message": "El link de confirmación ha expirado"}), 500
-    return redirect(url_for("home"))
