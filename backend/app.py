@@ -23,7 +23,15 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("home"))
-
+@app.route('/data')
+def get_data():
+    # Returning an api for showing in reactjs
+    return {
+        'Name': "geek",
+        "Age": "22",
+        "programming": "python"
+    }
+ 
 @app.route("/")
 def home():
     return render_template("home.html")
