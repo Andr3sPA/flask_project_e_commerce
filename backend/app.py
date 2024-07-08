@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template
+from flask import redirect, url_for, render_template, jsonify
 from flask_login import logout_user, login_required
 from __init__ import create_app
 from flask_cors import CORS
@@ -8,14 +8,14 @@ with app.app_context():
     from models import db
     db.create_all()  # Crear todas las tablas
 
-@app.route('/register', methods=["GET", "POST"])
+@app.route('/register', methods=["POST"])
 def register():
     import auth
     return auth.handleRegister()
 @app.login_manager.unauthorized_handler
 def unauthorized_handler():
     return 'Unauthorized', 401
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
     import auth
     return auth.handleLogin()
@@ -23,7 +23,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for("home"))
+    return jsonify({"message": "El cierre de sesion fue exitoso"}), 200
 @app.route('/data')
 def get_data():
     # Returning an api for showing in reactjs

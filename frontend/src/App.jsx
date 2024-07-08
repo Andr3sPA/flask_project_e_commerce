@@ -1,9 +1,9 @@
-// Filename - App.js
+import { Button } from "@/components/ui/button"
 
-// Importing modules
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
+axios.defaults.withCredentials = true;
 
 function App() {
     // usestate for setting a javascript
@@ -41,6 +41,7 @@ function App() {
                 <p>{data.age}</p>
                 <p>{data.programming}</p>
             </header>
+            <Button>Button</Button>
         </div>
     );
 }
