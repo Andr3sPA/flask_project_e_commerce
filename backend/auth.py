@@ -1,5 +1,8 @@
 # auth.py
 from __future__ import print_function
+
+from flask_jwt_extended import create_access_token
+
 from models import User
 import random
 import string
@@ -22,11 +25,15 @@ def validar_telefono(phone_number):
         return False
 
 def validar_contrasena(password):
-    patron = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$'
-    if re.match(patron, password):
-        return True
-    else:
+    if len(password) < 8:
         return False
+    elif re.search(r'[0-9]', password) is None:
+        return False
+    elif re.search(r'[A-Z]', password) is None:
+        return False
+    else:
+        return True
+
 def generar_codigo(email):
     caracteres = string.ascii_letters + string.digits
     codigo_aleatorio = ''.join(random.choice(caracteres) for _ in range(12))
@@ -51,14 +58,14 @@ def handleRegister():
     elif not (validar_telefono(request.form.get('phone'))):
         return(jsonify({'message': 'El telefono debe tener un formato válido'}), 401)
     elif not (validar_contrasena(request.form.get('password'))):
-        return (jsonify({'message': 'La contraseña debe tener al menos 8 caracteres, contener al menos una letra mayuscula, una letra minuscula y un número.'}), 401)
+        return (jsonify({'message': 'La contraseña debe tener al menos 8 caracteres, contener al menos una letra mayuscula y un número.'}), 401)
 
-    pw_hash=bcrypt.generate_password_hash(request.form.get("password_reg")).decode('utf-8')
+    pw_hash=bcrypt.generate_password_hash(request.form.get("password")).decode('utf-8')
     name=request.form.get("first_name")+" "+request.form.get("last_name")
-    user = User(email=request.form.get("email_reg"),
+    user = User(email=request.form.get("email"),
                 password=pw_hash,address=request.form.get("address"),
                 name=name,city=request.form.get("city"),
-                rol="user",verificationCode=generar_codigo(request.form.get("email_reg")),
+                rol="user",verificationCode=generar_codigo(request.form.get("email")),
                 phone=request.form.get("phone"))
 
     confirm_url = url_for("confirm_email", token=user.verificationCode, _external=True)
@@ -76,8 +83,8 @@ def handleLogin():
     elif user and bcrypt.check_password_hash(user.password, request.form.get("password")):
         if user.verificationCode != None:
             return (jsonify({'message': 'El email aun no ha sido confirmado'}), 401)
-        login_user(user)
-        return(jsonify({'message': 'Las credenciales son correctas'}), 200)
+        access_token = create_access_token(identity=user.email)
+        return jsonify(access_token=access_token)
     else:
         return (jsonify({'message': 'Email o contraseña incorrectos'}), 401)
 
