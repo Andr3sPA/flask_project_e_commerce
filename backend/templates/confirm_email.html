@@ -1,16 +1,35 @@
-<p>
-¡Hola {{ Nombre }}!
-
-Gracias por registrarte en nuestro servicio. Para completar el proceso de registro, necesitamos verificar tu dirección de correo electrónico. Por favor, haz clic en el siguiente enlace para confirmar tu cuenta:
-
-<p><a href="{{ confirm_url }}">{{ confirm_url }}</a></p>
-
-Si no has solicitado este registro, por favor ignora este correo electrónico.
-
-¡Esperamos tenerte como parte de nuestra comunidad!
-
-Saludos,
-Bordados Primaveral
-+57 319 5233710
-</p>
-<br />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Confirmation</title>
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+</head>
+<body class="bg-white antialiased dark:bg-gray-900">
+  <section class="py-8 md:py-16 mx-auto max-w-2xl px-4 2xl:px-0">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl mb-2">¡Hola {{ Nombre }}!</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6 md:mb-8">
+        Gracias por registrarte en nuestro servicio. Para completar el proceso de registro, necesitamos verificar tu dirección de correo electrónico.
+        Por favor, haz clic en el siguiente enlace para confirmar tu cuenta:
+      </p>
+      <p class="mb-6 md:mb-8">
+        <a href="{{ confirm_url }}" class="font-medium text-primary-700 hover:underline">{{ confirm_url }}</a>
+      </p>
+      <p class="text-gray-500 dark:text-gray-400 mb-6 md:mb-8">
+        Si no has solicitado este registro, por favor ignora este correo electrónico.
+      </p>
+      <p class="mb-6 md:mb-8">
+        ¡Esperamos tenerte como parte de nuestra comunidad!
+      </p>
+      <p class="text-gray-500 dark:text-gray-400 mb-6 md:mb-8">
+        Saludos,<br>
+        Bordados Primaveral<br>
+        +57 314 6589953
+      </p>
+    </div>
+  </section>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
+</html>
