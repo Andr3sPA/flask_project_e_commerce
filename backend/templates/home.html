@@ -15,11 +15,7 @@
           {% include 'sign_up.html' %}
       </ul>
     </nav>
-    {% if current_user.is_authenticated %}
-    <h1>You are logged in as</h1>{{ current_user.name }}
-    {% else %}
-    <h1>You are not logged in</h1>
-    {% endif %}
+
 
   <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
   {% include 'footer.html' %}

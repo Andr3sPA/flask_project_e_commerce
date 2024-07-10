@@ -1,9 +1,27 @@
 # auth.py
 from __future__ import print_function
 
-from flask_jwt_extended import create_access_token
+import datetime
+from functools import wraps
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies, get_jwt
+)
+from flask import Flask, request, jsonify, make_response
+import os
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
-from models import User
+import jwt
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies, unset_jwt_cookies
+)
+from models import User,Access_tokens
 import random
 import string
 from pprint import pprint
@@ -12,7 +30,6 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from flask import redirect, url_for, render_template, flash
 from flask import request, jsonify
-from flask_login import login_user
 from sqlalchemy import null
 
 from __init__ import db, bcrypt, configuration
@@ -50,6 +67,7 @@ def verificar_codigo(codigo):
     if usuario.email==email :
         usuario.verificationCode=null()
         return True
+
 def handleRegister():
     email = request.form.get('email')
     usuario = User.query.filter_by(email=email).first()
@@ -75,6 +93,18 @@ def handleRegister():
     db.session.commit()
     return(jsonify({'message': 'El usuario fue registrado exitosamente'}), 200)
 
+def handle_refresh_all(response):
+    exp_timestamp = get_jwt()["exp"]
+    now = datetime.now(timezone.utc)
+    target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+    if target_timestamp > exp_timestamp:
+        access_token = create_access_token(identity=get_jwt_identity())
+        set_access_cookies(response, access_token)
+    return response
+def handle_refresh_token():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity, fresh=False)
+    return jsonify(access_token=access_token), 200
 def handleLogin():
     user = User.query.filter_by(
     email=request.form.get("email")).first()
@@ -83,8 +113,14 @@ def handleLogin():
     elif user and bcrypt.check_password_hash(user.password, request.form.get("password")):
         if user.verificationCode != None:
             return (jsonify({'message': 'El email aun no ha sido confirmado'}), 401)
+        # Create the tokens we will be sending back to the user
         access_token = create_access_token(identity=user.email)
-        return jsonify(access_token=access_token)
+
+        # Set the JWT cookies in the response
+        resp = jsonify({'login': True})
+        set_access_cookies(resp, access_token)
+
+        return resp, 200
     else:
         return (jsonify({'message': 'Email o contraseña incorrectos'}), 401)
 
