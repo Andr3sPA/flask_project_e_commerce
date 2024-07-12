@@ -2,37 +2,31 @@
 from __future__ import print_function
 
 import datetime
-from functools import wraps
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, create_refresh_token,
-    get_jwt_identity, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies, get_jwt
-)
-from flask import Flask, request, jsonify, make_response
-import os
+import random
+import re
+import string
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-
-import jwt
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token, create_refresh_token,
-    get_jwt_identity, set_access_cookies,
-    set_refresh_cookies, unset_jwt_cookies
-)
-from models import User,Access_tokens
-import random
-import string
 from pprint import pprint
-import re
+
 import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
-from flask import redirect, url_for, render_template, flash
 from flask import request, jsonify
+from flask import url_for, render_template
+from flask_jwt_extended import (
+    create_access_token, create_refresh_token,
+    get_jwt_identity, set_access_cookies,
+    set_refresh_cookies
+)
+from flask_jwt_extended import (
+    get_jwt
+)
+from sib_api_v3_sdk.rest import ApiException
 from sqlalchemy import null
 
 from __init__ import db, bcrypt, configuration
+from models import User
+
 
 def validar_telefono(phone_number):
     patron = r'(\+\d{1,3}[- ]?)?\d{10}|\d{3}[-]\d{3}[-]\d{4}|\(\d{3}\)\s?\d{3}[-]\d{4}|\d{3}\.\d{3}\.\d{4}'
@@ -100,14 +94,15 @@ def handle_refresh_all(response):
     if target_timestamp > exp_timestamp:
         access_token = create_access_token(identity=get_jwt_identity())
         set_access_cookies(response, access_token)
+
+
     return response
 def handle_refresh_token():
     identity = get_jwt_identity()
     access_token = create_access_token(identity=identity, fresh=False)
     return jsonify(access_token=access_token), 200
 def handleLogin():
-    user = User.query.filter_by(
-    email=request.form.get("email")).first()
+    user = User.query.filter_by(email=request.form.get("email")).first()
     if user is None:
         return (jsonify({'message': 'El usuario no existe'}), 401)
     elif user and bcrypt.check_password_hash(user.password, request.form.get("password")):
@@ -119,14 +114,11 @@ def handleLogin():
         # Set the JWT cookies in the response
         resp = jsonify({'login': True})
         set_access_cookies(resp, access_token)
-
         return resp, 200
     else:
         return (jsonify({'message': 'Email o contraseña incorrectos'}), 401)
 
 
-def handleLoader_user(user_id):
-    return User.query.get(user_id)
 def sendVerificationMail(to_email,content):
     subject="Solicitud de Confirmación de Cuenta"
 

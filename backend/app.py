@@ -53,7 +53,7 @@ def login():
     import auth
     return auth.handleLogin()
 @app.route("/protected", methods=["GET"])
-@jwt_required()
+@jwt_required(fresh=True)
 def protected():
     return jsonify(foo="bar")
 @app.route("/logout", methods=["GET"])
@@ -62,7 +62,10 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
-
+@app.route("/extract_email", methods=["GET"])
+@jwt_required()
+def extract_email():
+    return get_jwt_identity()
  
 @app.route("/")
 def home():
