@@ -24,7 +24,8 @@ from flask_jwt_extended import (
 from sib_api_v3_sdk.rest import ApiException
 from sqlalchemy import null
 
-from __init__ import db, bcrypt, configuration
+from __init__ import db, bcrypt
+from app import app
 from models import User
 
 
@@ -119,11 +120,16 @@ def handleLogin():
         return (jsonify({'message': 'Email o contraseña incorrectos'}), 401)
 
 
-def sendVerificationMail(to_email,content):
-    subject="Solicitud de Confirmación de Cuenta"
+def sendVerificationMail(to_email, content):
+    subject = "Solicitud de Confirmación de Cuenta"
 
-    # Create an instance of the API class
+    # Asegúrate de pasar la configuración correcta
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = app.config['BREVO_API_KEY']
+
+    # Crear una instancia de la API con la configuración
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=[{"email": to_email}],
         sender={"email": "primaveralbordados@gmail.com"},
@@ -132,14 +138,13 @@ def sendVerificationMail(to_email,content):
     )
 
     try:
-        # Send a transactional email
+        # Enviar un correo electrónico transaccional
         api_response = api_instance.send_transac_email(send_smtp_email)
         pprint(api_response)
         return jsonify({"message": "Email sent successfully!"}), 200
     except ApiException as e:
         print("Exception when calling TransactionalEmailsApi->send_transac_email: %s\n" % e)
         return jsonify({"error": "Failed to send email"}), 500
-
 def handle_confirm_token(token):
     email=extraer_datos(token)
     usuario = User.query.filter_by(email=email).first()
