@@ -17,8 +17,8 @@ export function LoginForm() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
-      });
-    
+    });
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -26,13 +26,13 @@ export function LoginForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('email', formData.email);
             formDataToSend.append('password', formData.password);
 
-            const response = await axios.post('http://localhost:5000/login', formDataToSend);
+            const response = await axios.post('http://localhost:5000/login', formDataToSend, { withCredentials: true });
             console.log('Form data submitted successfully:', response.data);
             // Aquí podrías redirigir al usuario a otra página o mostrar un mensaje de éxito
         } catch (error) {
@@ -53,7 +53,6 @@ export function LoginForm() {
     const handleClick = () => {
         setIsShown(false); // Oculta el formulario al hacer clic en "Close"
     };
-
     return (
         <>
             {isShown && (
