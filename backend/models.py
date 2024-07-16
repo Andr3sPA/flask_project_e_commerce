@@ -13,9 +13,3 @@ class User(db.Model):
     country = db.Column(db.String(150), nullable=True)
     rol=db.Column(db.String(150), nullable=False)
     verificationCode = db.Column(db.String(150), nullable=True)
-class Access_tokens(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    token=db.Column(db.String(500), nullable=False)
-    expires_at=db.Column(db.DateTime, nullable=False)
-    created_at=db.Column(db.DateTime, nullable=False)
